@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Activity, Thermometer, Ruler, Scale, Clock, Zap, Gauge, Square, Wind, Move, Battery, Droplets } from 'lucide-react';
 
 const UnitConverter = () => {
@@ -180,7 +180,7 @@ const UnitConverter = () => {
     }
   };
 
-  const convertTemperature = (value, from, to) => {
+  const convertTemperature = useCallback((value, from, to) => {
     let celsius;
     
     // Convert to Celsius first
@@ -209,9 +209,9 @@ const UnitConverter = () => {
       default:
         return 0;
     }
-  };
+  }, []);
 
-  const convertUnits = (value, from, to, category) => {
+  const convertUnits = useCallback((value, from, to, category) => {
     if (!value || !from || !to) return '';
     
     const numValue = parseFloat(value);
@@ -237,9 +237,9 @@ const UnitConverter = () => {
     }
     
     return result.toFixed(6);
-  };
+  }, [categories, convertTemperature, decimalToFraction]);
 
-  const decimalToFraction = (decimal) => {
+  const decimalToFraction = useCallback((decimal) => {
     const wholeNumber = Math.floor(decimal);
     const fractionalPart = decimal - wholeNumber;
     
@@ -280,7 +280,7 @@ const UnitConverter = () => {
     } else {
       return `${wholeNumber} ${reducedNumerator}/${reducedDenominator}"`;
     }
-  };
+  }, []);
 
   const parseFractionalInches = (input) => {
     // Handle fractional input like "1 1/2", "3/4", "2.5", "12", etc.
@@ -328,7 +328,7 @@ const UnitConverter = () => {
     if (!toUnit || !categoryUnits.includes(toUnit)) {
       setToUnit(categoryUnits[1] || categoryUnits[0] || '');
     }
-  }, [activeCategory]);
+  }, [activeCategory, categories, fromUnit, toUnit]);
 
   useEffect(() => {
     let converted = '';
@@ -350,7 +350,7 @@ const UnitConverter = () => {
     }
     
     setResult(converted);
-  }, [fromValue, fromUnit, toUnit, activeCategory]);
+  }, [fromValue, fromUnit, toUnit, activeCategory, convertUnits]);
 
   const formatResult = (value) => {
     if (!value) return '';
