@@ -426,10 +426,10 @@ const UnitConverter = () => {
               <select
                 value={fromUnit}
                 onChange={(e) => setFromUnit(e.target.value)}
-                className="w-full p-3 bg-white/20 text-white"
+                className="w-full p-3 bg-white/20 text-white [&>option]:bg-gray-800 [&>option]:text-white rounded-sm"
               >
                 {Object.entries(categories[activeCategory].units).map(([key, unit]) => (
-                  <option key={key} value={key}>
+                  <option key={key} value={key} className="bg-gray-800 text-white">
                     {unit.name}
                   </option>
                 ))}
@@ -439,7 +439,7 @@ const UnitConverter = () => {
                 value={fromValue}
                 onChange={(e) => setFromValue(e.target.value)}
                 placeholder="Enter value"
-                className="w-full p-4 bg-white/20 text-white"
+                className="w-full p-4 bg-white/20 text-white rounded-sm"
               />
             </div>
 
@@ -448,10 +448,10 @@ const UnitConverter = () => {
               <select
                 value={toUnit}
                 onChange={(e) => setToUnit(e.target.value)}
-                className="w-full p-3 bg-white/20 text-white"
+                className="w-full p-3 bg-white/20 text-white [&>option]:bg-gray-800 [&>option]:text-white rounded-sm"
               >
                 {Object.entries(categories[activeCategory].units).map(([key, unit]) => (
-                  <option key={key} value={key}>
+                  <option key={key} value={key} className="bg-gray-800 text-white">
                     {unit.name}
                   </option>
                 ))}
