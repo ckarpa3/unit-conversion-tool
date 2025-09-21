@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Activity, Thermometer, Ruler, Scale, Clock, Zap, Gauge, Square, Wind, Move, Battery, Droplets } from 'lucide-react';
+import { Activity, Thermometer, Ruler, Scale, Clock, Zap, Gauge, Square, Wind, Battery, Droplets } from 'lucide-react';
 
 // Move categories outside component to prevent recreation
 const categoriesData = {
