@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Activity, Thermometer, Ruler, Scale, Clock, Zap, Gauge, Square, Wind, Battery, Droplets } from 'lucide-react';
+import { Activity, Thermometer, Ruler, Scale, Clock, Zap, Gauge, Square, Wind, Move, Battery, Droplets } from 'lucide-react';
 
 // Move categories outside component to prevent recreation
 const categoriesData = {
@@ -47,30 +47,57 @@ const categoriesData = {
       icon: Square,
       color: 'bg-emerald-500',
       units: {
-        sq_mm: { name: 'Square Millimeters', factor: 0.000001 },
-        sq_cm: { name: 'Square Centimeters', factor: 0.0001 },
-        sq_m: { name: 'Square Meters', factor: 1 },
-        sq_km: { name: 'Square Kilometers', factor: 1000000 },
-        sq_in: { name: 'Square Inches', factor: 0.00064516 },
-        sq_ft: { name: 'Square Feet', factor: 0.092903 },
-        sq_yd: { name: 'Square Yards', factor: 0.836127 },
+        mm2: { name: 'Square Millimeters', factor: 0.000001 },
+        cm2: { name: 'Square Centimeters', factor: 0.0001 },
+        m2: { name: 'Square Meters', factor: 1 },
+        km2: { name: 'Square Kilometers', factor: 1000000 },
+        in2: { name: 'Square Inches', factor: 0.00064516 },
+        ft2: { name: 'Square Feet', factor: 0.092903 },
+        yd2: { name: 'Square Yards', factor: 0.836127 },
         acre: { name: 'Acres', factor: 4046.86 },
-        hectare: { name: 'Hectares', factor: 10000 }
+        hectare: { name: 'Hectares', factor: 10000 },
+        mi2: { name: 'Square Miles', factor: 2589988 },
+        chain2: { name: 'Square Chains', factor: 404.686 }
       }
     },
     volume: {
       name: 'Volume',
       icon: Droplets,
-      color: 'bg-purple-500',
+      color: 'bg-blue-400',
       units: {
         ml: { name: 'Milliliters', factor: 0.001 },
         l: { name: 'Liters', factor: 1 },
-        cu_m: { name: 'Cubic Meters', factor: 1000 },
-        fl_oz: { name: 'Fluid Ounces', factor: 0.0295735 },
-        cup: { name: 'Cups', factor: 0.236588 },
-        pt: { name: 'Pints', factor: 0.473176 },
-        qt: { name: 'Quarts', factor: 0.946353 },
-        gal: { name: 'Gallons', factor: 3.78541 }
+        m3: { name: 'Cubic Meters', factor: 1000 },
+        cm3: { name: 'Cubic Centimeters', factor: 0.001 },
+        in3: { name: 'Cubic Inches', factor: 0.0163871 },
+        ft3: { name: 'Cubic Feet', factor: 28.3168 },
+        yd3: { name: 'Cubic Yards', factor: 764.555 },
+        gal_us: { name: 'Gallons (US)', factor: 3.78541 },
+        gal_uk: { name: 'Gallons (UK)', factor: 4.54609 },
+        qt_us: { name: 'Quarts (US)', factor: 0.946353 },
+        pt_us: { name: 'Pints (US)', factor: 0.473176 },
+        floz_us: { name: 'Fluid Ounces (US)', factor: 0.0295735 },
+        cup_us: { name: 'Cups (US)', factor: 0.236588 },
+        tbsp: { name: 'Tablespoons', factor: 0.0147868 },
+        tsp: { name: 'Teaspoons', factor: 0.00492892 },
+        barrel: { name: 'Barrels (Oil)', factor: 158.987 },
+        gondola: { name: 'Gondola Car (ft³)', factor: 99106 },
+        water_kg: { name: 'Water (kg)', factor: 1, density: 1000 },
+        concrete_kg: { name: 'Concrete (kg)', factor: 1, density: 2400 },
+        steel_kg: { name: 'Steel (kg)', factor: 1, density: 7850 },
+        aluminum_kg: { name: 'Aluminum (kg)', factor: 1, density: 2700 },
+        wood_pine_kg: { name: 'Pine Wood (kg)', factor: 1, density: 500 },
+        sand_kg: { name: 'Sand (kg)', factor: 1, density: 1600 },
+        gravel_kg: { name: 'Gravel (kg)', factor: 1, density: 1800 },
+        coal_kg: { name: 'Coal (kg)', factor: 1, density: 1350 },
+        water_lb: { name: 'Water (lbs)', factor: 1, density: 2204.62, imperial: true },
+        concrete_lb: { name: 'Concrete (lbs)', factor: 1, density: 5291.09, imperial: true },
+        steel_lb: { name: 'Steel (lbs)', factor: 1, density: 17306.27, imperial: true },
+        aluminum_lb: { name: 'Aluminum (lbs)', factor: 1, density: 5952.48, imperial: true },
+        wood_pine_lb: { name: 'Pine Wood (lbs)', factor: 1, density: 1102.31, imperial: true },
+        sand_lb: { name: 'Sand (lbs)', factor: 1, density: 3527.39, imperial: true },
+        gravel_lb: { name: 'Gravel (lbs)', factor: 1, density: 3968.32, imperial: true },
+        coal_lb: { name: 'Coal (lbs/ft³)', factor: 1, density: 84.3, imperial: true }
       }
     },
     time: {
@@ -83,9 +110,9 @@ const categoriesData = {
         min: { name: 'Minutes', factor: 60 },
         hr: { name: 'Hours', factor: 3600 },
         day: { name: 'Days', factor: 86400 },
-        wk: { name: 'Weeks', factor: 604800 },
-        month: { name: 'Months', factor: 2592000 },
-        yr: { name: 'Years', factor: 31536000 }
+        week: { name: 'Weeks', factor: 604800 },
+        month: { name: 'Months', factor: 2629746 },
+        year: { name: 'Years', factor: 31556952 }
       }
     },
     energy: {
@@ -106,24 +133,58 @@ const categoriesData = {
       icon: Gauge,
       color: 'bg-red-500',
       units: {
-        pa: { name: 'Pascal', factor: 1 },
-        kpa: { name: 'Kilopascal', factor: 1000 },
-        mpa: { name: 'Megapascal', factor: 1000000 },
+        pa: { name: 'Pascals', factor: 1 },
+        kpa: { name: 'Kilopascals', factor: 1000 },
+        mpa: { name: 'Megapascals', factor: 1000000 },
         bar: { name: 'Bar', factor: 100000 },
+        mbar: { name: 'Millibar', factor: 100 },
+        atm: { name: 'Atmosphere', factor: 101325 },
         psi: { name: 'PSI', factor: 6894.76 },
-        atm: { name: 'Atmosphere', factor: 101325 }
+        torr: { name: 'Torr', factor: 133.322 },
+        mmhg: { name: 'mmHg', factor: 133.322 },
+        inhg: { name: 'inHg', factor: 3386.39 }
       }
     },
     speed: {
       name: 'Speed',
       icon: Wind,
-      color: 'bg-orange-500',
+      color: 'bg-violet-500',
       units: {
-        mps: { name: 'Meters per Second', factor: 1 },
-        kph: { name: 'Kilometers per Hour', factor: 0.277778 },
-        mph: { name: 'Miles per Hour', factor: 0.44704 },
+        mps: { name: 'Meters/Second', factor: 1 },
+        kph: { name: 'Kilometers/Hour', factor: 0.277778 },
+        mph: { name: 'Miles/Hour', factor: 0.44704 },
+        fps: { name: 'Feet/Second', factor: 0.3048 },
         knot: { name: 'Knots', factor: 0.514444 },
-        ftps: { name: 'Feet per Second', factor: 0.3048 }
+        mach: { name: 'Mach (Sea Level)', factor: 343 }
+      }
+    },
+    force: {
+      name: 'Force',
+      icon: Move,
+      color: 'bg-rose-500',
+      units: {
+        n: { name: 'Newtons', factor: 1 },
+        kn: { name: 'Kilonewtons', factor: 1000 },
+        dyne: { name: 'Dynes', factor: 0.00001 },
+        lbf: { name: 'Pounds-Force', factor: 4.44822 },
+        kgf: { name: 'Kilograms-Force', factor: 9.80665 },
+        pdl: { name: 'Poundals', factor: 0.138255 },
+        ftlb: { name: 'Foot-Pounds', factor: 1.35582 },
+        inlb: { name: 'Inch-Pounds', factor: 0.112985 }
+      }
+    },
+    power: {
+      name: 'Power',
+      icon: Battery,
+      color: 'bg-amber-500',
+      units: {
+        w: { name: 'Watts', factor: 1 },
+        kw: { name: 'Kilowatts', factor: 1000 },
+        mw: { name: 'Megawatts', factor: 1000000 },
+        hp: { name: 'Horsepower (Mechanical)', factor: 745.7 },
+        hp_metric: { name: 'Horsepower (Metric)', factor: 735.499 },
+        btuh: { name: 'BTU/Hour', factor: 0.293071 },
+        ftlbs: { name: 'Foot-Pounds/Second', factor: 1.35582 }
       }
     },
     data: {
